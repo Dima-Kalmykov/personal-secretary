@@ -3,7 +3,7 @@ import telebot
 from flask import Flask, request
 
 import utils
-from integrations.google import calendar_api, dao
+from integrations.google import dao
 from integrations.google.google_authorization import google_server
 from variables.constants import HEROKU_URL
 from variables.env_variables import FLASK_SECRET_KEY, BOT_TOKEN, PORT
@@ -22,11 +22,6 @@ bot = telebot.TeleBot(BOT_TOKEN)
 bot_server = get_server()
 
 
-# Todo Если пришло сообщение неавторизованному пользователю, то просим авторизоваться
-# Todo Вынести /start в отдельную команду (хотя она не нужна, будем просить вызвать /help)
-# Todo Делать clear session, если пользователь делает ревок.
-
-
 @bot_server.route('/start')
 def start():
     user_id = utils.get_decoded_id_from_query(request)
@@ -35,7 +30,6 @@ def start():
         flask.session['user_id'] = user_id
         return flask.redirect("authorize")
 
-    calendar_api.add_event(user_id)
     return '200'
 
 
@@ -56,11 +50,6 @@ def echo(message):
     bot.reply_to(message, f'{message.text}')
 
 
-# Todo Сделать обработчик /start
-# Todo Если пользователь есть в базе, то говорим, что за всеми подсказками в /help
-# Todo в /help появлюятся кнопки: авторизоваться, забрать доступ и др (прямо тут берётся user_id.
-# Todo          и по нему генерится fernet url, который линкуеися к кнопке)
-# Todo Если же пользователя нет в базе, то добавляем его туда и говорим, чтобы шёл в help.
 @bot_server.route(f'/{BOT_TOKEN}', methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')

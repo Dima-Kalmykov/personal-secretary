@@ -1,5 +1,3 @@
-import pprint
-
 import flask
 import requests
 from flask import request, Blueprint
@@ -16,8 +14,6 @@ google_server = Blueprint(GOOGLE_AUTHORIZATION_STR, __name__)
 
 @google_server.route('/authorize')
 def authorize():
-    print(request.args)
-    pprint.pprint(request)
     client_config = CLIENT_CONFIG
 
     flow = Flow.from_client_config(client_config, scopes=SCOPES)
@@ -36,8 +32,6 @@ def authorize():
 
 @google_server.route(f'/{GOOGLE_CALLBACK_METHOD}')
 def oauth2callback():
-    pprint.pprint(request)
-    print(request.args)
     state = flask.session['state']
     client_config = CLIENT_CONFIG
 
