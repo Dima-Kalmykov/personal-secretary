@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from telebot.types import Update
 
+import utils
 from bot_message_handler import bot
 from integrations.google import dao
 from integrations.google.google_authorization import google_server
@@ -17,7 +18,6 @@ def get_server():
     return server
 
 
-dao.init_db_tables_if_needed()
 bot_server = get_server()
 
 
@@ -41,4 +41,7 @@ def webhook():
 
 
 if __name__ == '__main__':
+    dao.init_db_tables_if_needed()
+    utils.update_bot_hints_for_commands()
+
     bot_server.run(host='0.0.0.0', port=PORT, debug=True)
