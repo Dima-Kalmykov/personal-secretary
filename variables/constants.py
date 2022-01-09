@@ -10,13 +10,16 @@ CLIENT_ID = '425347190480-cao3rik3n8u7led5nvptjb4mvidtvtud.apps.googleuserconten
 USER_ID = 'user_id'
 STATE = 'state'
 
-GOOGLE_AUTHORIZATION_STR = 'google_authorization'
+# Must match the url in the google credentials.
+GOOGLE_URL_PREFIX = 'google'
 GOOGLE_CALLBACK_METHOD = 'oauth2callback'
+
+GOOGLE_AUTHORIZATION_STR = 'google_authorization'
 GOOGLE_AUTHORIZE_METHOD = 'authorize'
 
 HTTPS = 'https'
 REVOKE_ACCESS_COMMAND = 'revoke'
-REQUEST_ACCESS_COMMAND = 'give'
+PROVIDE_ACCESS_COMMAND = 'provide'
 
 CLIENT_CONFIG = {
     "web": {
@@ -27,7 +30,7 @@ CLIENT_CONFIG = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": f"{CLIENT_SECRET}",
         "redirect_uris": [
-            "https://private-secretary.herokuapp.com/oauth2callback"
+            f"https://private-secretary.herokuapp.com/{GOOGLE_URL_PREFIX}/{GOOGLE_CALLBACK_METHOD}"
         ]
     }
 }

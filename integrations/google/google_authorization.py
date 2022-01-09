@@ -1,7 +1,5 @@
 import flask
-import requests
-from flask import request, Blueprint
-from google.oauth2.credentials import Credentials
+from flask import Blueprint
 from google_auth_oauthlib.flow import Flow
 
 import utils
@@ -10,6 +8,17 @@ from integrations.google.dao import User
 from variables.constants import *
 
 google_server = Blueprint(GOOGLE_AUTHORIZATION_STR, __name__)
+
+
+@google_server.route(f'/{PROVIDE_ACCESS_COMMAND}')
+def provide_access():
+    user_id = utils.get_user_id_from_query(flask.request)
+
+    if dao.get_user_by_id(user_id):
+        return 'You are already logged in'
+
+    flask.session[USER_ID] = user_id
+    return flask.redirect(GOOGLE_AUTHORIZE_METHOD)
 
 
 @google_server.route(f'/{GOOGLE_AUTHORIZE_METHOD}')
@@ -49,23 +58,7 @@ def oauth2callback():
     if dao.get_user_by_id(user_id):
         dao.update_user(user_id, credentials.token, credentials.refresh_token)
     else:
-        dao.add_user(User(user_id, credentials.token, credentials.refresh_token))
+        new_user = User(user_id, credentials.token, credentials.refresh_token)
+        dao.add_user(new_user)
 
     return 'Successfully! You can close the page'
-
-
-@google_server.route(f'/{REVOKE_ACCESS_COMMAND}')
-def revoke():
-    user_id = utils.get_user_id_from_query(request)
-    credentials = Credentials(**utils.get_google_credentials(user_id))
-    response = requests.post('https://oauth2.googleapis.com/revoke',
-                             params={'token': credentials.token},
-                             headers={'content-type': 'application/x-www-form-urlencoded'})
-
-    status_code = response.status_code
-
-    if status_code == 200:
-        dao.delete_user(user_id)
-        return 'Credentials successfully revoked.'
-    else:
-        return 'An error occurred.'
