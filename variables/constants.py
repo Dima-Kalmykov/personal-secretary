@@ -1,3 +1,5 @@
+from telebot.types import BotCommand
+
 from variables.env_variables import CLIENT_SECRET
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
@@ -39,12 +41,12 @@ CLIENT_CONFIG = {
 }
 
 COMMANDS = [
-    {
-        "command": f"{PROVIDE_ACCESS_COMMAND}",
-        "description": "Provide access to google calendar"
-    },
-    {
-        "command": f"{REVOKE_ACCESS_COMMAND}",
-        "description": "Revoke access from google calendar"
-    }
+    BotCommand(
+        command=PROVIDE_ACCESS_COMMAND,
+        description="Provide access to google calendar"
+    ),
+    BotCommand(
+        command=REVOKE_ACCESS_COMMAND,
+        description="Revoke access from google calendar"
+    )
 ]
