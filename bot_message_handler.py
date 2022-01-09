@@ -42,3 +42,7 @@ def process_command(message):
 @bot.message_handler(func=lambda x: True, content_types=['text'])
 def echo(message):
     bot.reply_to(message, f'{message.text}')
+
+
+if __name__ == "__main__":
+    utils.update_bot_hints_for_commands()

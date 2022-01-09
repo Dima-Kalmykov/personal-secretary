@@ -1,7 +1,9 @@
 from cryptography.fernet import Fernet
+from telebot.types import BotCommand
 
+from bot_message_handler import bot
 from integrations.google import dao
-from variables.constants import TOKEN_URI, CLIENT_ID, SCOPES, USER_ID
+from variables.constants import TOKEN_URI, CLIENT_ID, SCOPES, USER_ID, COMMANDS
 from variables.env_variables import FERNET_KEY, CLIENT_SECRET
 
 fernet = Fernet(FERNET_KEY.encode())
@@ -30,3 +32,17 @@ def get_google_credentials(user_id):
         'client_secret': CLIENT_SECRET,
         'scopes': SCOPES
     }
+
+
+def update_bot_hints_for_commands():
+    bot_commands = []
+
+    for command in COMMANDS:
+        bot_command = BotCommand(command['command'], command['description'])
+        bot_commands.append(bot_command)
+
+    commands_are_set = bot.set_my_commands(bot_commands)
+    if commands_are_set:
+        print("Commands are set")
+    else:
+        print("Something went wrong")

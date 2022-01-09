@@ -34,3 +34,14 @@ CLIENT_CONFIG = {
         ]
     }
 }
+
+COMMANDS = [
+    {
+        "command": f"{PROVIDE_ACCESS_COMMAND}",
+        "description": "Provide access to google calendar"
+    },
+    {
+        "command": f"{REVOKE_ACCESS_COMMAND}",
+        "description": "Revoke access from google calendar"
+    }
+]
