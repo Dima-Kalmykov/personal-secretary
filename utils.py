@@ -1,7 +1,7 @@
 from cryptography.fernet import Fernet
 
 from integrations.google import dao
-from variables.constants import TOKEN_URI, CLIENT_ID, SCOPES
+from variables.constants import TOKEN_URI, CLIENT_ID, SCOPES, USER_ID
 from variables.env_variables import FERNET_KEY, CLIENT_SECRET
 
 fernet = Fernet(FERNET_KEY.encode())
@@ -15,8 +15,8 @@ def decode_string(message):
     return fernet.decrypt(message.encode()).decode()
 
 
-def get_decoded_id_from_query(request):
-    return decode_string(request.args.get('id'))
+def get_user_id_from_query(request):
+    return decode_string(request.args.get(USER_ID))
 
 
 def get_google_credentials(user_id):
