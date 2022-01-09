@@ -20,7 +20,8 @@ def revoke(message):
 
     status_code = response.status_code
     response_message = "Something went wrong"
-
+    print(status_code)
+    print(response)
     if status_code == 200:
         dao.delete_user(user_id)
         response_message = "Access successfully revoked!"
