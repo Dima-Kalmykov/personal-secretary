@@ -1,3 +1,5 @@
+from telebot.types import BotCommand
+
 from variables.env_variables import CLIENT_SECRET
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
@@ -30,18 +32,21 @@ CLIENT_CONFIG = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": f"{CLIENT_SECRET}",
         "redirect_uris": [
-            f"https://private-secretary.herokuapp.com/{GOOGLE_URL_PREFIX}/{GOOGLE_CALLBACK_METHOD}"
+            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_CALLBACK_METHOD}",
+            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_AUTHORIZE_METHOD}",
+            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}",
+            HEROKU_URL
         ]
     }
 }
 
 COMMANDS = [
-    {
-        "command": f"{PROVIDE_ACCESS_COMMAND}",
-        "description": "Provide access to google calendar"
-    },
-    {
-        "command": f"{REVOKE_ACCESS_COMMAND}",
-        "description": "Revoke access from google calendar"
-    }
+    BotCommand(
+        command=PROVIDE_ACCESS_COMMAND,
+        description="Provide access to google calendar"
+    ),
+    BotCommand(
+        command=REVOKE_ACCESS_COMMAND,
+        description="Revoke access from google calendar"
+    )
 ]
