@@ -7,11 +7,16 @@ HEROKU_URL = 'https://private-secretary.herokuapp.com'
 TOKEN_URI = 'https://oauth2.googleapis.com/token'
 CLIENT_ID = '425347190480-cao3rik3n8u7led5nvptjb4mvidtvtud.apps.googleusercontent.com'
 
+USER_ID = 'user_id'
+STATE = 'state'
+
 GOOGLE_AUTHORIZATION_STR = 'google_authorization'
 GOOGLE_CALLBACK_METHOD = 'oauth2callback'
+GOOGLE_AUTHORIZE_METHOD = 'authorize'
 
 HTTPS = 'https'
-
+REVOKE_ACCESS_COMMAND = 'revoke'
+REQUEST_ACCESS_COMMAND = 'give'
 
 CLIENT_CONFIG = {
     "web": {

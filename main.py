@@ -1,11 +1,12 @@
 import flask
-import telebot
 from flask import Flask, request
+from telebot import TeleBot
+from telebot.types import Update
 
 import utils
 from integrations.google import dao
 from integrations.google.google_authorization import google_server
-from variables.constants import HEROKU_URL
+from variables.constants import *
 from variables.env_variables import FLASK_SECRET_KEY, BOT_TOKEN, PORT
 
 
@@ -18,22 +19,22 @@ def get_server():
 
 
 dao.init_db_tables_if_needed()
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = TeleBot(BOT_TOKEN)
 bot_server = get_server()
 
 
-@bot_server.route('/start')
+@bot_server.route(f'/{REQUEST_ACCESS_COMMAND}')
 def start():
-    user_id = utils.get_decoded_id_from_query(request)
+    user_id = utils.get_user_id_from_query(request)
 
-    if not dao.get_user_by_id(user_id):
-        flask.session['user_id'] = user_id
-        return flask.redirect("authorize")
+    if dao.get_user_by_id(user_id):
+        return 'You are already logged in'
 
-    return '200'
+    flask.session[USER_ID] = user_id
+    return flask.redirect(GOOGLE_AUTHORIZE_METHOD)
 
 
-@bot.message_handler(commands=['revoke', 'start'])
+@bot.message_handler(commands=[REQUEST_ACCESS_COMMAND, REVOKE_ACCESS_COMMAND])
 def process_command(message):
     user_id = message.from_user.id
     encoded_id = utils.encode_string(str(user_id))
@@ -41,7 +42,7 @@ def process_command(message):
 
     bot.send_message(
         message.chat.id,
-        f"{HEROKU_URL}/{command}?id={encoded_id}"
+        f"{HEROKU_URL}/{command}?{USER_ID}={encoded_id}"
     )
 
 
@@ -53,7 +54,7 @@ def echo(message):
 @bot_server.route(f'/{BOT_TOKEN}', methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
+    update = Update.de_json(json_string)
 
     bot.process_new_updates([update])
 
