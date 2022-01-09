@@ -27,8 +27,12 @@ def authorize():
 
     flow = Flow.from_client_config(client_config, scopes=SCOPES)
 
-    flow.redirect_uri = flask.url_for(f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}', _external=True,
-                                      _scheme=HTTPS)
+    flow.redirect_uri = flask.url_for(
+        f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
+        _external=True,
+        _scheme=HTTPS
+    )
+
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true'
@@ -44,10 +48,13 @@ def oauth2callback():
     state = flask.session[STATE]
     client_config = CLIENT_CONFIG
 
-    flow = Flow.from_client_config(
-        client_config, scopes=SCOPES, state=state)
-    flow.redirect_uri = flask.url_for(f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}', _external=True,
-                                      _scheme=HTTPS)
+    flow = Flow.from_client_config(client_config, scopes=SCOPES, state=state)
+
+    flow.redirect_uri = flask.url_for(
+        f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
+        _external=True,
+        _scheme=HTTPS
+    )
 
     authorization_response = flask.request.url
     flow.fetch_token(authorization_response=authorization_response)
