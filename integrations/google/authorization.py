@@ -23,9 +23,7 @@ def provide_access():
 
 @google_server.route(f'/{GOOGLE_AUTHORIZE_METHOD}')
 def authorize():
-    client_config = CLIENT_CONFIG
-
-    flow = Flow.from_client_config(client_config, scopes=SCOPES)
+    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES)
 
     flow.redirect_uri = flask.url_for(
         f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
@@ -46,9 +44,8 @@ def authorize():
 @google_server.route(f'/{GOOGLE_CALLBACK_METHOD}')
 def oauth2callback():
     state = flask.session[STATE]
-    client_config = CLIENT_CONFIG
 
-    flow = Flow.from_client_config(client_config, scopes=SCOPES, state=state)
+    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES, state=state)
 
     flow.redirect_uri = flask.url_for(
         f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
