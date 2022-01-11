@@ -26,7 +26,7 @@ def revoke(message):
 
     if status_code == 200:
         dao.delete_user(user_id)
-        response_message = "Access successfully revoked!"
+        response_message = "Access is successfully revoked!"
 
     bot.send_message(message.chat.id, response_message)
 

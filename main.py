@@ -5,7 +5,7 @@ from telebot.types import Update
 import utils
 from bot_message_handler import bot
 from integrations.google import dao
-from integrations.google.google_authorization import google_server
+from integrations.google.authorization import google_server
 from variables.constants import *
 from variables.env_variables import FLASK_SECRET_KEY, BOT_TOKEN, PORT
 

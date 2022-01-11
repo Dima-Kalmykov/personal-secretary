@@ -16,7 +16,7 @@ STATE = 'state'
 GOOGLE_URL_PREFIX = 'google'
 GOOGLE_CALLBACK_METHOD = 'oauth2callback'
 
-GOOGLE_AUTHORIZATION_STR = 'google_authorization'
+GOOGLE_AUTHORIZATION_STR = 'authorization'
 GOOGLE_AUTHORIZE_METHOD = 'authorize'
 
 HTTPS = 'https'
