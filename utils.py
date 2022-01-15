@@ -21,8 +21,9 @@ def get_user_id_from_query(request):
 
 
 def get_google_credentials(user_id):
+    print(f"Try to find user in bd with id = {user_id}")
     user = dao.get_user_by_id(user_id)
-
+    print(f'Founded user = {user}')
     return {
         'token': user.google_token,
         'refresh_token': user.google_refresh_token,

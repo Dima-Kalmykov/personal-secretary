@@ -1,6 +1,6 @@
 import requests
 from google.oauth2.credentials import Credentials
-from telebot import TeleBot
+from telebot import TeleBot, types
 
 import utils
 from integrations.google import dao
@@ -12,27 +12,63 @@ bot = TeleBot(BOT_TOKEN)
 
 @bot.message_handler(commands=[REVOKE_ACCESS_COMMAND])
 def revoke(message):
+    try:
+        user_id = message.from_user.id
+        print(user_id)
+        credentials = Credentials(**utils.get_google_credentials(user_id))
+
+        print("Start request")
+        response = requests.post(
+            'https://oauth2.googleapis.com/revoke',
+            params={'token': credentials.token},
+            headers={'content-type': 'application/x-www-form-urlencoded'}
+        )
+
+        status_code = response.status_code
+        response_message = "Something went wrong"
+
+        if status_code == 200:
+            dao.delete_user(user_id)
+            response_message = "Access is successfully revoked!"
+
+        bot.send_message(message.chat.id, response_message)
+    except Exception as error:
+        print("-" * 100)
+        print(f'Error was {error}')
+        print("-" * 100)
+
+
+@bot.message_handler(commands=['settings'])
+def process_settings(message):
+    markup = types.InlineKeyboardMarkup(row_width=1)
+
+    print("Try to get user id")
     user_id = message.from_user.id
-    credentials = Credentials(**utils.get_google_credentials(user_id))
+    if dao.get_user_by_id(user_id):
+        item = types.InlineKeyboardButton('Revoke access', callback_data='revoke')
+    else:
+        encoded_id = utils.encode_string(str(user_id))
+        item = types.InlineKeyboardButton(
+            'Provide access',
+            url=f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{PROVIDE_ACCESS_COMMAND}?{USER_ID}={encoded_id}"
+        )
 
-    response = requests.post(
-        'https://oauth2.googleapis.com/revoke',
-        params={'token': credentials.token},
-        headers={'content-type': 'application/x-www-form-urlencoded'}
-    )
+    print(f"Add item {item} to markup")
+    markup.add(item)
+    bot.send_message(message.chat.id, 'Choose', reply_markup=markup)
 
-    status_code = response.status_code
-    response_message = "Something went wrong"
 
-    if status_code == 200:
-        dao.delete_user(user_id)
-        response_message = "Access is successfully revoked!"
-
-    bot.send_message(message.chat.id, response_message)
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    if call.message:
+        if call.data == 'revoke':
+            print("Start revoke")
+            print(call.message)
+            revoke(call.message)
 
 
 @bot.message_handler(commands=[PROVIDE_ACCESS_COMMAND])
-def process_command(message):
+def provide(message):
     user_id = message.from_user.id
     encoded_id = utils.encode_string(str(user_id))
 

@@ -13,6 +13,7 @@ google_server = Blueprint(GOOGLE_AUTHORIZATION_STR, __name__)
 @google_server.route(f'/{PROVIDE_ACCESS_COMMAND}')
 def provide_access():
     user_id = utils.get_user_id_from_query(flask.request)
+    print(f'User with id = {id} will be added')
 
     if dao.get_user_by_id(user_id):
         return 'You are already logged in'
