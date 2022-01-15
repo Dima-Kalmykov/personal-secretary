@@ -20,13 +20,15 @@ def get_user_id_from_query(request):
     return decode_string(request.args.get(USER_ID))
 
 
-def get_google_credentials(user_id):
-    print(f"Try to find user in bd with id = {user_id}")
+def get_google_credentials(user_id, token=None, refresh_token=None):
     user = dao.get_user_by_id(user_id)
-    print(f'Founded user = {user}')
+
+    google_token = token if token is not None else user.google_token
+    google_refresh_token = refresh_token if refresh_token is not None else user.google_refresh_token
+
     return {
-        'token': user.google_token,
-        'refresh_token': user.google_refresh_token,
+        'token': google_token,
+        'refresh_token': google_refresh_token,
         'token_uri': TOKEN_URI,
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
