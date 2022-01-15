@@ -1,6 +1,6 @@
 import requests
 from google.oauth2.credentials import Credentials
-from telebot import TeleBot
+from telebot import TeleBot, types
 
 import utils
 from integrations.google import dao
@@ -10,9 +10,8 @@ from variables.env_variables import BOT_TOKEN
 bot = TeleBot(BOT_TOKEN)
 
 
-@bot.message_handler(commands=[REVOKE_ACCESS_COMMAND])
 def revoke(message):
-    user_id = message.from_user.id
+    user_id = message.chat.id
     credentials = Credentials(**utils.get_google_credentials(user_id))
 
     response = requests.post(
@@ -31,15 +30,32 @@ def revoke(message):
     bot.send_message(message.chat.id, response_message)
 
 
-@bot.message_handler(commands=[PROVIDE_ACCESS_COMMAND])
-def process_command(message):
-    user_id = message.from_user.id
-    encoded_id = utils.encode_string(str(user_id))
+@bot.message_handler(commands=[SETTINGS_COMMAND])
+def process_settings(message):
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    settings_message = "Google account is not linked"
 
-    bot.send_message(
-        message.chat.id,
-        f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{PROVIDE_ACCESS_COMMAND}?{USER_ID}={encoded_id}"
-    )
+    user_id = message.from_user.id
+    user = dao.get_user_by_id(user_id)
+
+    if user:
+        access_button = types.InlineKeyboardButton('Revoke access', callback_data=REVOKE_ACCESS_COMMAND)
+        settings_message = f"All events will be saved to the calendar of user with email {user.email}"
+    else:
+        encoded_id = utils.encode_string(str(user_id))
+        access_button = types.InlineKeyboardButton(
+            'Provide access',
+            url=f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{PROVIDE_ACCESS_COMMAND}?{USER_ID}={encoded_id}"
+        )
+
+    markup.add(access_button)
+    bot.send_message(message.chat.id, settings_message, reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    if call.data == REVOKE_ACCESS_COMMAND:
+        revoke(call.message)
 
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
