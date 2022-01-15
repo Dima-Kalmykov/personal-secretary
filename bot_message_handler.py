@@ -33,10 +33,14 @@ def revoke(message):
 @bot.message_handler(commands=[SETTINGS_COMMAND])
 def process_settings(message):
     markup = types.InlineKeyboardMarkup(row_width=1)
+    settings_message = "Google account is not linked"
 
     user_id = message.from_user.id
-    if dao.get_user_by_id(user_id):
+    user = dao.get_user_by_id(user_id)
+
+    if user:
         access_button = types.InlineKeyboardButton('Revoke access', callback_data=REVOKE_ACCESS_COMMAND)
+        settings_message = f"All events will be saved to the calendar of user with email {user.email}"
     else:
         encoded_id = utils.encode_string(str(user_id))
         access_button = types.InlineKeyboardButton(
@@ -45,14 +49,13 @@ def process_settings(message):
         )
 
     markup.add(access_button)
-    bot.send_message(message.chat.id, 'Choose', reply_markup=markup)
+    bot.send_message(message.chat.id, settings_message, reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    if call.message:
-        if call.data == REVOKE_ACCESS_COMMAND:
-            revoke(call.message)
+    if call.data == REVOKE_ACCESS_COMMAND:
+        revoke(call.message)
 
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
