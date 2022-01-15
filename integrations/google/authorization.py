@@ -1,6 +1,8 @@
 import flask
 from flask import Blueprint
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from googleapiclient import discovery
 
 import utils
 from integrations.google import dao
@@ -58,11 +60,22 @@ def oauth2callback():
 
     credentials = flow.credentials
     user_id = flask.session[USER_ID]
+    user_email = get_email(user_id, credentials)
 
     if dao.get_user_by_id(user_id):
-        dao.update_user(user_id, credentials.token, credentials.refresh_token)
+        dao.update_user(user_id, credentials.token, credentials.refresh_token, user_email)
     else:
-        new_user = User(user_id, credentials.token, credentials.refresh_token)
+        new_user = User(user_id, credentials.token, credentials.refresh_token, user_email)
         dao.add_user(new_user)
 
     return 'Successfully! You can close the page'
+
+
+def get_email(user_id, credentials):
+    credentials = utils.get_google_credentials(user_id, credentials.token, credentials.refresh_token)
+    creds = Credentials(**credentials)
+
+    service = discovery.build(OAUTH_SERVICE, OAUTH_API_VERSION, credentials=creds)
+    data = service.userinfo().get().execute()
+
+    return data['email']

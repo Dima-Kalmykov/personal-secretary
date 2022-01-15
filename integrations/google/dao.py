@@ -25,11 +25,13 @@ class User(base):
     id = Column(Integer, primary_key=True)
     google_token = Column(String)
     google_refresh_token = Column(String)
+    email = Column(String)
 
-    def __init__(self, user_id, token, refresh_token):
+    def __init__(self, user_id, token, refresh_token, email):
         self.id = user_id
         self.google_token = token
         self.google_refresh_token = refresh_token
+        self.email = email
 
 
 def get_user_by_id(user_id):
@@ -47,8 +49,9 @@ def delete_user(user_id):
     session.commit()
 
 
-def update_user(user_id, new_token, new_refresh_token):
+def update_user(user_id, new_token, new_refresh_token, new_email):
     user = get_user_by_id(user_id)
     user.google_token = new_token
     user.google_refresh_token = new_refresh_token
+    user.email = new_email
     session.commit()
