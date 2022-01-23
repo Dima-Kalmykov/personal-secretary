@@ -7,7 +7,7 @@ from bot_message_handler import bot
 from integrations.google import dao
 from integrations.google.authorization import google_server
 from variables.constants import *
-from variables.env_variables import FLASK_SECRET_KEY, BOT_TOKEN, PORT
+from variables.env_variables import FLASK_SECRET_KEY, BOT_TOKEN, PORT, DEBUG_MODE
 
 
 def get_server():
@@ -43,5 +43,8 @@ def webhook():
 if __name__ == '__main__':
     dao.init_db_tables_if_needed()
     utils.update_bot_hints_for_commands()
-
-    bot_server.run(host='0.0.0.0', port=PORT, debug=True)
+    if DEBUG_MODE == '1':
+        bot.remove_webhook()
+        bot.infinity_polling()
+    else:
+        bot_server.run(host='0.0.0.0', port=PORT, debug=True)
