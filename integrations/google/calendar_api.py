@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from google.oauth2.credentials import Credentials
 from googleapiclient import discovery
 
@@ -14,6 +16,21 @@ def add_event(user_id):
     created_event = calendar.events().insert(calendarId='primary', body=event).execute()
 
     print(f"Event created: {created_event.get('htmlLink')}")
+
+
+def get_events(user_id):
+    credentials = utils.get_google_credentials(user_id)
+    creds = Credentials(**credentials)
+    calendar = discovery.build(CALENDAR_SERVICE, CALENDAR_API_VERSION, credentials=creds)
+
+    now = datetime.utcnow().isoformat() + 'Z'
+    events_result = calendar.events().list(calendarId='primary', timeMin=now, singleEvents=True,
+                                           orderBy='startTime').execute()
+
+    events = events_result.get('items', [])
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        print(start, event['summary'])
 
 
 def make_json_event():
