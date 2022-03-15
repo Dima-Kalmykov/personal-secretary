@@ -7,9 +7,9 @@ from variables.env_variables import DATABASE_URL
 
 # Database prefix for SqlAlchemy should starts with postgresql, not postgres
 # (can't override this env variable in heroku)
-modified_db_url = f'{DATABASE_URL[0:8]}ql{DATABASE_URL[8:]}'
+# modified_db_url = DATABASE_URL
 
-db_engine = create_engine(modified_db_url)
+db_engine = create_engine(DATABASE_URL)
 base = declarative_base()
 Session = sessionmaker(db_engine)
 session = Session()
@@ -39,6 +39,7 @@ def get_user_by_id(user_id):
 
 
 def add_user(user):
+    print(user)
     session.add(user)
     session.commit()
 

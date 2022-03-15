@@ -14,7 +14,7 @@ CALENDAR_API_VERSION = 'v3'
 OAUTH_SERVICE = 'oauth2'
 OAUTH_API_VERSION = 'v2'
 
-HEROKU_URL = 'https://private-secretary.herokuapp.com'
+HEROKU_URL = 'https://personal-secretary.mooo.com'
 TOKEN_URI = 'https://oauth2.googleapis.com/token'
 CLIENT_ID = '425347190480-cao3rik3n8u7led5nvptjb4mvidtvtud.apps.googleusercontent.com'
 

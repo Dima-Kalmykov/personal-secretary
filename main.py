@@ -23,9 +23,11 @@ bot_server = get_server()
 
 @bot_server.route(f'/{BOT_TOKEN}', methods=['POST'])
 def get_message():
+    print("HERE")
     json_string = request.get_data().decode('utf-8')
     update = Update.de_json(json_string)
 
+    print(update)
     bot.process_new_updates([update])
 
     return '!', 200
@@ -33,8 +35,11 @@ def get_message():
 
 @bot_server.route('/')
 def webhook():
+    print("HERE 2")
     bot.remove_webhook()
+    #remove_heroku !!!
     app_url = f'{HEROKU_URL}/{BOT_TOKEN}'
+    print(app_url)
     bot.set_webhook(url=app_url)
 
     return '!', 200
@@ -44,4 +49,8 @@ if __name__ == '__main__':
     dao.init_db_tables_if_needed()
     utils.update_bot_hints_for_commands()
 
-    bot_server.run(host='0.0.0.0', port=PORT, debug=True)
+    bot_server.run(host='164.90.214.186', port=PORT, debug=True,
+    ssl_context=('/etc/letsencrypt/live/personal-secretary.mooo.com/fullchain.pem',
+    '/etc/letsencrypt/live/personal-secretary.mooo.com/privkey.pem'))
+    # bot.remove_webhook()
+    # bot.infinity_polling()
