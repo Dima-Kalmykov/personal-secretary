@@ -39,7 +39,6 @@ def get_user_by_id(user_id):
 
 
 def add_user(user):
-    print(user)
     session.add(user)
     session.commit()
 

@@ -14,9 +14,14 @@ CALENDAR_API_VERSION = 'v3'
 OAUTH_SERVICE = 'oauth2'
 OAUTH_API_VERSION = 'v2'
 
-HEROKU_URL = 'https://personal-secretary.mooo.com'
+PORT = 443
+HOST = '164.90.214.186'
+
+SERVER_URL = 'https://personal-secretary.mooo.com'
 TOKEN_URI = 'https://oauth2.googleapis.com/token'
 CLIENT_ID = '425347190480-cao3rik3n8u7led5nvptjb4mvidtvtud.apps.googleusercontent.com'
+CERTIFICATE_PATH = '/etc/letsencrypt/live/personal-secretary.mooo.com/fullchain.pem'
+KEY_PATH = '/etc/letsencrypt/live/personal-secretary.mooo.com/privkey.pem'
 
 USER_ID = 'user_id'
 STATE = 'state'
@@ -42,10 +47,10 @@ CLIENT_CONFIG = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": f"{CLIENT_SECRET}",
         "redirect_uris": [
-            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_CALLBACK_METHOD}",
-            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_AUTHORIZE_METHOD}",
-            f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}",
-            HEROKU_URL
+            f"{SERVER_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_CALLBACK_METHOD}",
+            f"{SERVER_URL}/{GOOGLE_URL_PREFIX}/{GOOGLE_AUTHORIZE_METHOD}",
+            f"{SERVER_URL}/{GOOGLE_URL_PREFIX}",
+            SERVER_URL
         ]
     }
 }

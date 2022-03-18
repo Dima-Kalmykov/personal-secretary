@@ -45,7 +45,7 @@ def process_settings(message):
         encoded_id = utils.encode_string(str(user_id))
         access_button = types.InlineKeyboardButton(
             'Provide access',
-            url=f"{HEROKU_URL}/{GOOGLE_URL_PREFIX}/{PROVIDE_ACCESS_COMMAND}?{USER_ID}={encoded_id}"
+            url=f"{SERVER_URL}/{GOOGLE_URL_PREFIX}/{PROVIDE_ACCESS_COMMAND}?{USER_ID}={encoded_id}"
         )
 
     markup.add(access_button)

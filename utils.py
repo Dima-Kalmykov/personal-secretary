@@ -22,7 +22,6 @@ def get_user_id_from_query(request):
 
 def get_google_credentials(user_id, token=None, refresh_token=None):
     user = dao.get_user_by_id(user_id)
-    print(user)
 
     google_token = token if token is not None else user.google_token
     google_refresh_token = refresh_token if refresh_token is not None else user.google_refresh_token
