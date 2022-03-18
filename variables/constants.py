@@ -35,8 +35,11 @@ GOOGLE_AUTHORIZE_METHOD = 'authorize'
 
 HTTPS = 'https'
 SETTINGS_COMMAND = 'settings'
+EVENTS_COMMAND = 'events'
 REVOKE_ACCESS_COMMAND = 'revoke'
 PROVIDE_ACCESS_COMMAND = 'provide'
+CONFIRM_ADDING_EVENT_COMMAND = 'confirm'
+CANCEL_EVENT_ADDING_COMMAND = 'cancel'
 
 CLIENT_CONFIG = {
     "web": {
@@ -59,5 +62,9 @@ COMMANDS = [
     BotCommand(
         command=SETTINGS_COMMAND,
         description="Bot settings"
+    ),
+    BotCommand(
+        command=EVENTS_COMMAND,
+        description="Get upcoming events"
     )
 ]

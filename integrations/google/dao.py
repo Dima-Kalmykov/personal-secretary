@@ -5,10 +5,6 @@ from sqlalchemy.orm import sessionmaker
 
 from variables.env_variables import DATABASE_URL
 
-# Database prefix for SqlAlchemy should starts with postgresql, not postgres
-# (can't override this env variable in heroku)
-# modified_db_url = DATABASE_URL
-
 db_engine = create_engine(DATABASE_URL)
 base = declarative_base()
 Session = sessionmaker(db_engine)

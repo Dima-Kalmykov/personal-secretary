@@ -15,6 +15,7 @@ def add_event(user_id):
     event = make_json_event()
     created_event = calendar.events().insert(calendarId='primary', body=event).execute()
 
+    # Todo мб стоит возвращать ссылку после успешного добавления
     print(f"Event created: {created_event.get('htmlLink')}")
 
 
@@ -31,6 +32,8 @@ def get_events(user_id):
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
+
+    return events
 
 
 def make_json_event():

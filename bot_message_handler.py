@@ -4,6 +4,7 @@ from telebot import TeleBot, types
 
 import utils
 from integrations.google import dao
+from integrations.google.calendar_api import get_events, add_event
 from variables.constants import *
 from variables.env_variables import BOT_TOKEN
 
@@ -52,15 +53,44 @@ def process_settings(message):
     bot.send_message(message.chat.id, settings_message, reply_markup=markup)
 
 
+@bot.message_handler(commands=[EVENTS_COMMAND])
+def process_events(message):
+    events = get_events(message.from_user.id)
+    bot.send_message(message.chat.id, f"List of your events:\n{events}")
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    if call.data == REVOKE_ACCESS_COMMAND:
-        revoke(call.message)
+    command = call.data
+    message = call.message
+
+    if command == REVOKE_ACCESS_COMMAND:
+        revoke(message)
+    if command == CONFIRM_ADDING_EVENT_COMMAND:
+        remove_keyboard(message)
+        add_event(message.from_user.id)
+        bot.reply_to(message, "Successfully added")
+    if command == CANCEL_EVENT_ADDING_COMMAND:
+        remove_keyboard(message)
+        bot.reply_to(message, "Adding canceled")
 
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
-def echo(message):
-    bot.reply_to(message, f'{message.text}')
+def process_text_messages(message):
+    yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
+    no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
+
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(yes_button, no_button)
+
+    bot.reply_to(message, f'Do you want to add event with given content?\n{message.text}', reply_markup=markup)
+
+
+def remove_keyboard(message):
+    chat_id = message.chat.id
+    message_id = message.message_id
+
+    bot.edit_message_reply_markup(chat_id, message_id)
 
 
 if __name__ == "__main__":
