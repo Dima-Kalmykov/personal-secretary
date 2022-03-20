@@ -67,8 +67,9 @@ def callback(call):
     if command == REVOKE_ACCESS_COMMAND:
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
+        print("HERE_1")
         remove_keyboard(message)
-        add_event(message.from_user.id)
+        add_event(message.chat.id)
         bot.reply_to(message, "Successfully added")
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)
