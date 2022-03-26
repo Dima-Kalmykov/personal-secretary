@@ -55,8 +55,14 @@ def process_settings(message):
 
 @bot.message_handler(commands=[EVENTS_COMMAND])
 def process_events(message):
-    events = get_events(message.from_user.id)
-    bot.send_message(message.chat.id, f"List of your events:\n{events}")
+    user_id = message.from_user.id
+    user = dao.get_user_by_id(user_id)
+
+    if user:
+        events = get_events(message.from_user.id)
+        bot.send_message(message.chat.id, f"List of your events:\n{events}")
+    else:
+        bot.send_message(message.chat.id, f"Please, provide access to your google account")
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -67,7 +73,6 @@ def callback(call):
     if command == REVOKE_ACCESS_COMMAND:
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
-        print("HERE_1")
         remove_keyboard(message)
         add_event(message.chat.id)
         bot.reply_to(message, "Successfully added")
@@ -78,13 +83,19 @@ def callback(call):
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
 def process_text_messages(message):
-    yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
-    no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
+    user_id = message.from_user.id
+    user = dao.get_user_by_id(user_id)
 
-    markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.add(yes_button, no_button)
+    if user:
+        yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
+        no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
 
-    bot.reply_to(message, f'Do you want to add event with given content?\n{message.text}', reply_markup=markup)
+        markup = types.InlineKeyboardMarkup(row_width=2)
+        markup.add(yes_button, no_button)
+
+        bot.reply_to(message, f'Do you want to add event with given content?\n{message.text}', reply_markup=markup)
+    else:
+        bot.reply_to(message, f"Can't add this event. Please, provide access to your google account")
 
 
 def remove_keyboard(message):
