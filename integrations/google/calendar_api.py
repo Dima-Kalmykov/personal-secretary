@@ -6,7 +6,7 @@ from googleapiclient import discovery
 import utils
 from model.EventContent import EventResponse
 from variables.constants import CALENDAR_SERVICE, CALENDAR_API_VERSION
-
+from pprint import pprint
 
 def add_event(user_id):
     credentials = utils.get_google_credentials(user_id)
@@ -15,8 +15,8 @@ def add_event(user_id):
     event = make_json_event()
     created_event = calendar.events().insert(calendarId='primary', body=event).execute()
 
-    start_time = created_event['start']['datetime']
-    end_time = created_event['end']['datetime']
+    start_time = created_event['start']['dateTime']
+    end_time = created_event['end']['dateTime']
 
     current_event = EventResponse("", start_time, end_time)
     if created_event['summary']:
@@ -26,6 +26,7 @@ def add_event(user_id):
 
 
 def get_events(user_id):
+    print("get_events")
     result = []
     credentials = utils.get_google_credentials(user_id)
     creds = Credentials(**credentials)
@@ -34,15 +35,16 @@ def get_events(user_id):
     now = datetime.utcnow().isoformat() + 'Z'
     events = calendar.events().list(calendarId='primary', timeMin=now, singleEvents=True,
                                     orderBy='startTime').execute().get('items', [])
-
+    #  print(events)
     for event in events:
-        start_time = event['start']['datetime']
-        end_time = event['end']['datetime']
-
+        pprint(event)
+        start_time = event['start']['dateTime']
+        end_time = event['end']['dateTime']
+        print(start_time, end_time)
         current_event = EventResponse("", start_time, end_time)
-        if event['summary']:
+        if event.get('summary'):
             current_event.summary = event['summary']
-
+        print("after_if")
         result.append(current_event)
 
     return result
@@ -50,13 +52,13 @@ def get_events(user_id):
 
 def make_json_event():
     return {
-        "summary": "Da da",
+        "summary": "Da da 04",
         'start': {
-            'dateTime': '2022-05-28T09:00:00-07:00',
+            'dateTime': '2022-04-28T09:00:00-07:00',
             'timeZone': 'America/Los_Angeles',
         },
         'end': {
-            'dateTime': '2022-05-28T17:00:00-07:00',
+            'dateTime': '2022-04-28T17:00:00-07:00',
             'timeZone': 'America/Los_Angeles',
         },
     }
