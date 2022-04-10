@@ -11,8 +11,12 @@ class EventProcessor:
         self.nlp = spacy.load("en_core_web_lg")
         self.t = ts.google
 
-    def extract_datetime(self, text_date="", text_time=""):
-        if text_date.lower().find("after tomorrow") != -1:
+    def extract_datetime(self, text_date="", text_time="9:00"):
+        if text_time == '':
+            text_time = "9:00"
+        if text_date == "":
+            daystamp = date.today()
+        elif text_date.lower().find("after tomorrow") != -1:
             daystamp = date.today() + timedelta(days=2)
         elif text_date.lower().find("tomorrow") != -1:
             daystamp = date.today() + timedelta(days=1)
@@ -47,9 +51,9 @@ class EventProcessor:
             if ent.label_ == 'DATE':
                 text_date = str(ent)
             if ent.label_ == 'PERSON':
-                pers = str(ent)
+                pers = self.t(str(ent), to_language='ru')
             if ent.label_ == 'LOC' or ent.label_ == 'ORG' or ent.label_ == 'GPE':
-                loc = str(ent)
+                loc = self.t(str(ent), to_language='ru')
             summary = summary.replace(str(ent), '')
         timestamp = self.extract_datetime(text_date, text_time)
         if pers != "" and loc != "":
@@ -61,3 +65,8 @@ class EventProcessor:
         else:
             summary = f"{self.extract_summary(summary)}"
         return summary, timestamp
+
+
+result = EventProcessor().process_message("Встреча с Машей в 9:00")
+
+print(result)
