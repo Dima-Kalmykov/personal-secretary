@@ -1,16 +1,17 @@
+import re
+from datetime import date, timedelta
+from datetime import datetime as dt
+
 import spacy
 import translators as ts
-from datetime import datetime as dt
-from datetime import date, time, timedelta
+
 
 class EventProcessor:
     def __init__(self):
         self.nlp = spacy.load("en_core_web_lg")
         self.t = ts.google
 
-    def extract_datetime(text_date="", text_time=""):
-        daystamp = date.today()
-        timestamp = time(12, 0, 0)
+    def extract_datetime(self, text_date="", text_time=""):
         if text_date.lower().find("after tomorrow") != -1:
             daystamp = date.today() + timedelta(days=2)
         elif text_date.lower().find("tomorrow") != -1:
@@ -19,22 +20,22 @@ class EventProcessor:
             daystamp = date.today() + timedelta(weeks=1)
         else:
             day = re.search(r'\d{1,2}', text_date).group()
-            month = re.search(r'[A-Za-z]{1,10}', s).group()
+            month = re.search(r'[A-Za-z]{1,10}', text_date).group()
             year = str(date.today().year)
             daystamp = dt.strptime(' '.join([day, month, year]), "%d %B %Y")
         timestamp = dt.strptime(text_time, "%H:%M").time()
         return dt.combine(daystamp, timestamp)
 
-    def extract_summary(msg=""):
+    def extract_summary(self, msg=""):
         preps = [' at ', ' with ', ' on ', ' in ']
         for prep in preps:
             msg = msg.replace(prep, '')
-        msg = t(msg, to_language='ru')
+        msg = self.t(msg, to_language='ru')
         return msg.lower()
 
-    def process_message(msg=""):
-        translated_msg = t(msg, from_language='ru')
-        doc = nlp(translated_msg)
+    def process_message(self, msg=""):
+        translated_msg = self.t(msg, from_language='ru')
+        doc = self.nlp(translated_msg)
         text_time = ""
         text_date = ""
         pers = ""
@@ -47,16 +48,16 @@ class EventProcessor:
                 text_date = str(ent)
             if ent.label_ == 'PERSON':
                 pers = str(ent)
-            if ent.label_ == 'LOC' or ent.label_ == 'ORG' or  ent.label_ == 'GPE':
+            if ent.label_ == 'LOC' or ent.label_ == 'ORG' or ent.label_ == 'GPE':
                 loc = str(ent)
             summary = summary.replace(str(ent), '')
-        timestamp = extract_datetime(text_date, text_time)
+        timestamp = self.extract_datetime(text_date, text_time)
         if pers != "" and loc != "":
-            summary = f"{pers}: {extract_summary(summary)}, {loc}"
+            summary = f"{pers}: {self.extract_summary(summary)}, {loc}"
         elif pers != "":
-            summary = f"{pers}: {extract_summary(summary)}"
+            summary = f"{pers}: {self.extract_summary(summary)}"
         elif loc != "":
-            summary = f"{loc}: {extract_summary(summary)}"
+            summary = f"{loc}: {self.extract_summary(summary)}"
         else:
-            summary = f"{extract_summary(summary)}"
+            summary = f"{self.extract_summary(summary)}"
         return summary, timestamp
