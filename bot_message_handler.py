@@ -1,7 +1,7 @@
 import requests
 from google.oauth2.credentials import Credentials
 from telebot import TeleBot, types
-
+from mesproc import EventProcessor
 import utils
 from integrations.google import dao
 from integrations.google.calendar_api import get_events, add_event
@@ -14,7 +14,6 @@ bot = TeleBot(BOT_TOKEN)
 def revoke(message):
     user_id = message.chat.id
     credentials = Credentials(**utils.get_google_credentials(user_id))
-
     response = requests.post(
         'https://oauth2.googleapis.com/revoke',
         params={'token': credentials.token},
@@ -22,12 +21,12 @@ def revoke(message):
     )
 
     status_code = response.status_code
-    response_message = "Something went wrong"
+    response_message = "Something went wrong. Please, provide access to Google account once more."
 
     if status_code == 200:
-        dao.delete_user(user_id)
+        # dao.delete_user(user_id)
         response_message = "Access is successfully revoked!"
-
+    dao.delete_user(user_id)
     bot.send_message(message.chat.id, response_message)
 
 
@@ -65,7 +64,9 @@ def process_events(message):
             result_message += f"summary = {event.summary}\n" \
                        f"start_time = {event.start_time}\n" \
                        f"end_time = {event.end_time}\n" \
-                       f"-------------------------------------"
+                       f"-------------------------------------\n"
+        if not events:
+             result_message = "Event list is empty"
         bot.send_message(message.chat.id, result_message)
     else:
         bot.send_message(message.chat.id, f"Please, provide access to your google account")
@@ -98,8 +99,9 @@ def process_text_messages(message):
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(yes_button, no_button)
-
-        bot.reply_to(message, f'Do you want to add event with given content?\n{message.text}', reply_markup=markup)
+        processor = EventProcessor()
+        summary, timestamp = processor.process_message(message.text)
+        bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content?\n{summary}', reply_markup=markup)
     else:
         bot.reply_to(message, f"Can't add this event. Please, provide access to your google account")
 

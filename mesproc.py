@@ -12,10 +12,23 @@ class EventProcessor:
         self.t = ts.google
 
     def extract_datetime(self, text_date="", text_time="9:00"):
+        print("Text_time_1:", text_time)
         if text_time == '':
             text_time = "9:00"
         if text_date == "":
             daystamp = date.today()
+            print("Text_time_2:", text_time)
+            twos = text_time.count(':')
+            giv_h = int(text_time[:text_time.find(':')])
+            print(giv_h)
+            giv_m = int(text_time[(1+text_time.find(':')):])
+            print(giv_m)
+            cur_tm = dt.now()
+            if giv_h < cur_tm.hour:
+                daystamp += timedelta(days=1)
+            elif giv_h == cur_tm.hour:
+                if giv_m < cur_tm.minute:
+                    daystamp += timedelta(days=1)
         elif text_date.lower().find("after tomorrow") != -1:
             daystamp = date.today() + timedelta(days=2)
         elif text_date.lower().find("tomorrow") != -1:
@@ -47,6 +60,7 @@ class EventProcessor:
         summary = doc.text
         for ent in doc.ents:
             if ent.label_ == 'TIME':
+                print("Recognized time of event:", str(ent)) 
                 text_time = str(ent)
             if ent.label_ == 'DATE':
                 text_date = str(ent)
