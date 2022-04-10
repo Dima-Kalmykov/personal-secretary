@@ -1,14 +1,16 @@
 import requests
 from google.oauth2.credentials import Credentials
 from telebot import TeleBot, types
-from mesproc import EventProcessor
+
 import utils
 from integrations.google import dao
 from integrations.google.calendar_api import get_events, add_event
+from mesproc import EventProcessor
 from variables.constants import *
 from variables.env_variables import BOT_TOKEN
 
 bot = TeleBot(BOT_TOKEN)
+error_message = "Something went wrong. Please, provide access to Google account once more."
 
 
 def revoke(message):
@@ -21,11 +23,11 @@ def revoke(message):
     )
 
     status_code = response.status_code
-    response_message = "Something went wrong. Please, provide access to Google account once more."
+    response_message = error_message
 
     if status_code == 200:
-        # dao.delete_user(user_id)
         response_message = "Access is successfully revoked!"
+
     dao.delete_user(user_id)
     bot.send_message(message.chat.id, response_message)
 
@@ -59,15 +61,18 @@ def process_events(message):
 
     if user:
         events = get_events(message.from_user.id)
-        result_message = "List of your events:\n"
-        for event in events:
-            result_message += f"summary = {event.summary}\n" \
-                       f"start_time = {event.start_time}\n" \
-                       f"end_time = {event.end_time}\n" \
-                       f"-------------------------------------\n"
-        if not events:
-             result_message = "Event list is empty"
-        bot.send_message(message.chat.id, result_message)
+        if events == -1:
+            bot.send_message(message.chat.id, error_message)
+        else:
+            result_message = "List of your events:\n"
+            for event in events:
+                result_message += f"summary = {event.summary}\n" \
+                                  f"start_time = {event.start_time}\n" \
+                                  f"end_time = {event.end_time}\n" \
+                                  f"-------------------------------------\n"
+            if not events:
+                result_message = "Event list is empty"
+            bot.send_message(message.chat.id, result_message)
     else:
         bot.send_message(message.chat.id, f"Please, provide access to your google account")
 
@@ -81,8 +86,11 @@ def callback(call):
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
         remove_keyboard(message)
-        add_event(message.chat.id, message)
-        bot.reply_to(message, "Successfully added")
+        response = add_event(message.chat.id, message[message.find('|') + 1:])
+        if response == -1:
+            bot.reply_to(message, error_message)
+        else:
+            bot.reply_to(message, "Successfully added")
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)
         bot.reply_to(message, "Adding canceled")
@@ -101,7 +109,8 @@ def process_text_messages(message):
         markup.add(yes_button, no_button)
         processor = EventProcessor()
         summary, timestamp = processor.process_message(message.text)
-        bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content?\n{summary}', reply_markup=markup)
+        bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
+                     reply_markup=markup)
     else:
         bot.reply_to(message, f"Can't add this event. Please, provide access to your google account")
 

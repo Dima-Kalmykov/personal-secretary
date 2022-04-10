@@ -21,7 +21,7 @@ class EventProcessor:
             twos = text_time.count(':')
             giv_h = int(text_time[:text_time.find(':')])
             print(giv_h)
-            giv_m = int(text_time[(1+text_time.find(':')):])
+            giv_m = int(text_time[(1 + text_time.find(':')):])
             print(giv_m)
             cur_tm = dt.now()
             if giv_h < cur_tm.hour:
@@ -60,7 +60,7 @@ class EventProcessor:
         summary = doc.text
         for ent in doc.ents:
             if ent.label_ == 'TIME':
-                print("Recognized time of event:", str(ent)) 
+                print("Recognized time of event:", str(ent))
                 text_time = str(ent)
             if ent.label_ == 'DATE':
                 text_date = str(ent)
