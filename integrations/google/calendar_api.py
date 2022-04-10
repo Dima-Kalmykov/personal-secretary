@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from google.oauth2.credentials import Credentials
 from googleapiclient import discovery
 
 import utils
+from mesproc import EventProcessor
 from model.EventContent import EventResponse
 from variables.constants import CALENDAR_SERVICE, CALENDAR_API_VERSION
 
@@ -49,14 +50,17 @@ def get_events(user_id):
 
 
 def make_json_event(message):
+    print(f'Message = {message}')
+    processor = EventProcessor()
+    summary, timestamp = processor.process_message(message)
     return {
-        "summary": "Da da 04",
+        "summary": f"{summary}",
         'start': {
-            'dateTime': '2022-04-28T09:00:00-07:00',
+            'dateTime': f'{datetime.isoformat(timestamp)}',
             'timeZone': 'America/Los_Angeles',
         },
         'end': {
-            'dateTime': '2022-04-28T17:00:00-07:00',
+            'dateTime': f'{datetime.isoformat(timestamp + timedelta(hours=1))}',
             'timeZone': 'America/Los_Angeles',
         },
     }

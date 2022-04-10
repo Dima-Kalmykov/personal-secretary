@@ -8,7 +8,7 @@ import translators as ts
 
 class EventProcessor:
     def __init__(self):
-        self.nlp = spacy.load("en_core_web_lg")
+        self.nlp = spacy.load("en_core_web_sm")
         self.t = ts.google
 
     def extract_datetime(self, text_date="", text_time="9:00"):
