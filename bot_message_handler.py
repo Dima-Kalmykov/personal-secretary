@@ -60,7 +60,13 @@ def process_events(message):
 
     if user:
         events = get_events(message.from_user.id)
-        bot.send_message(message.chat.id, f"List of your events:\n{events}")
+        result_message = "List of your events:\n"
+        for event in events:
+            result_message += f"summary = {event.summary}\n" \
+                       f"start_time = {event.start_time}\n" \
+                       f"end_time = {event.end_time}\n" \
+                       f"-------------------------------------"
+        bot.send_message(message.chat.id, result_message)
     else:
         bot.send_message(message.chat.id, f"Please, provide access to your google account")
 
