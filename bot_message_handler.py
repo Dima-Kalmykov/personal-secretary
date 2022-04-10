@@ -80,7 +80,7 @@ def callback(call):
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
         remove_keyboard(message)
-        add_event(message.chat.id)
+        add_event(message.chat.id, message)
         bot.reply_to(message, "Successfully added")
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)

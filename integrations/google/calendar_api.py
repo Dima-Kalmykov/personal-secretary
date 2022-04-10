@@ -8,11 +8,11 @@ from model.EventContent import EventResponse
 from variables.constants import CALENDAR_SERVICE, CALENDAR_API_VERSION
 
 
-def add_event(user_id):
+def add_event(user_id, message):
     credentials = utils.get_google_credentials(user_id)
     creds = Credentials(**credentials)
     calendar = discovery.build(CALENDAR_SERVICE, CALENDAR_API_VERSION, credentials=creds)
-    event = make_json_event()
+    event = make_json_event(message)
     created_event = calendar.events().insert(calendarId='primary', body=event).execute()
 
     start_time = created_event['start']['dateTime']
@@ -48,7 +48,7 @@ def get_events(user_id):
     return result
 
 
-def make_json_event():
+def make_json_event(message):
     return {
         "summary": "Da da 04",
         'start': {
