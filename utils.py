@@ -24,7 +24,8 @@ def get_google_credentials(user_id, token=None, refresh_token=None):
     user = dao.get_user_by_id(user_id)
 
     google_token = token if token is not None else user.google_token
-    google_refresh_token = refresh_token if refresh_token is not None else user.google_refresh_token
+    if user or refresh_token is not None:
+        google_refresh_token = refresh_token if refresh_token is not None else user.google_refresh_token
 
     return {
         'token': google_token,

@@ -10,15 +10,20 @@ from model.EventContent import EventResponse
 from variables.constants import CALENDAR_SERVICE, CALENDAR_API_VERSION
 
 
-def add_event(user_id, message):
+def add_event(user_id, message, timest):
+    print("in add_event")
     try:
         credentials = utils.get_google_credentials(user_id)
         creds = Credentials(**credentials)
         calendar = discovery.build(CALENDAR_SERVICE, CALENDAR_API_VERSION, credentials=creds)
-        event = make_json_event(message)
+        print("Before mje")
+        event = make_json_event(message, timest)
         calendar.events().insert(calendarId='primary', body=event).execute()
-    except:
-        dao.delete_user(message.chat.id)
+    except Exception as exp:
+        print('-' * 100)
+        print("Exception add_event", exp)
+        print('-' * 100)
+        dao.delete_user(user_id)
         return -1
 
 
@@ -44,14 +49,14 @@ def get_events(user_id):
     return result
 
 
-def make_json_event(message):
+def make_json_event(summary, timest):
     try:
-        processor = EventProcessor()
-        summary, timestamp = processor.process_message(message.text)
+        print("Message from mje: ", summary)
     except Exception as exp:
         print('-' * 100)
         print("Exception mje", exp)
         print('-' * 100)
+    timestamp = datetime.strptime(timest, "%Y-%m-%d %H:%M:%S")
     print("Making json event: ", datetime.isoformat(timestamp))
     return {
         "summary": f"{summary}",

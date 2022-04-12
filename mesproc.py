@@ -81,6 +81,6 @@ class EventProcessor:
         return summary, timestamp
 
 
-result = EventProcessor().process_message("Встреча с Машей в 9:00")
+# result = EventProcessor().process_message("Встреча с Машей в 9:00")
 
-print(result)
+# print(result)

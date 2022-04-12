@@ -60,13 +60,12 @@ def oauth2callback():
 
     credentials = flow.credentials
     user_id = flask.session[USER_ID]
-    user_email = get_email(user_id, credentials)
-
-    if dao.get_user_by_id(user_id):
-        dao.update_user(user_id, credentials.token, credentials.refresh_token, user_email)
-    else:
-        new_user = User(user_id, credentials.token, credentials.refresh_token, user_email)
+    print("-"*50 + "\n oauth2\n" + "-"*50 )
+    if not dao.get_user_by_id(user_id):
+        new_user = User(user_id, credentials.token, credentials.refresh_token, None)
         dao.add_user(new_user)
+    user_email = get_email(user_id, credentials)
+    dao.update_user(user_id, credentials.token, credentials.refresh_token, user_email)
 
     return 'Successfully! You can close the page'
 
