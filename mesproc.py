@@ -8,7 +8,7 @@ import translators as ts
 
 class EventProcessor:
     def __init__(self):
-        self.nlp = spacy.load("en_core_web_sm")
+        self.nlp = None
         self.t = ts.google
 
     def extract_datetime(self, text_date="", text_time="9:00"):
@@ -51,34 +51,39 @@ class EventProcessor:
         return msg.lower()
 
     def process_message(self, msg=""):
-        translated_msg = self.t(msg, from_language='ru')
-        doc = self.nlp(translated_msg)
-        text_time = ""
-        text_date = ""
-        pers = ""
-        loc = ""
-        summary = doc.text
-        for ent in doc.ents:
-            if ent.label_ == 'TIME':
-                print("Recognized time of event:", str(ent))
-                text_time = str(ent)
-            if ent.label_ == 'DATE':
-                text_date = str(ent)
-            if ent.label_ == 'PERSON':
-                pers = self.t(str(ent), to_language='ru')
-            if ent.label_ == 'LOC' or ent.label_ == 'ORG' or ent.label_ == 'GPE':
-                loc = self.t(str(ent), to_language='ru')
-            summary = summary.replace(str(ent), '')
-        timestamp = self.extract_datetime(text_date, text_time)
-        if pers != "" and loc != "":
-            summary = f"{pers}: {self.extract_summary(summary)}, {loc}"
-        elif pers != "":
-            summary = f"{pers}: {self.extract_summary(summary)}"
-        elif loc != "":
-            summary = f"{loc}: {self.extract_summary(summary)}"
-        else:
-            summary = f"{self.extract_summary(summary)}"
-        return summary, timestamp
+        if self.nlp is None:
+            self.nlp = spacy.load("en_core_web_md")
+        try:
+            translated_msg = self.t(msg, from_language='ru')
+            doc = self.nlp(translated_msg)
+            text_time = ""
+            text_date = ""
+            pers = ""
+            loc = ""
+            summary = doc.text
+            for ent in doc.ents:
+                if ent.label_ == 'TIME':
+                    print("Recognized time of event:", str(ent))
+                    text_time = str(ent)
+                if ent.label_ == 'DATE':
+                    text_date = str(ent)
+                if ent.label_ == 'PERSON':
+                    pers = self.t(str(ent), to_language='ru')
+                if ent.label_ == 'LOC' or ent.label_ == 'ORG' or ent.label_ == 'GPE':
+                    loc = self.t(str(ent), to_language='ru')
+                summary = summary.replace(str(ent), '')
+            timestamp = self.extract_datetime(text_date, text_time)
+            if pers != "" and loc != "":
+                summary = f"{pers}: {self.extract_summary(summary)}, {loc}"
+            elif pers != "":
+                summary = f"{pers}: {self.extract_summary(summary)}"
+            elif loc != "":
+                summary = f"{loc}: {self.extract_summary(summary)}"
+            else:
+                summary = f"{self.extract_summary(summary)}"
+            return summary, timestamp
+        except Exception as exp:
+            print("-"*50, exp, "-"*50, sep='\n')
 
 
 # result = EventProcessor().process_message("Встреча с Машей в 9:00")

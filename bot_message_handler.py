@@ -11,6 +11,7 @@ from variables.env_variables import BOT_TOKEN
 
 bot = TeleBot(BOT_TOKEN)
 error_message = "Something went wrong. Please, provide access to Google account once more."
+processor = EventProcessor()
 
 
 def revoke(message):
@@ -113,7 +114,6 @@ def process_text_messages(message):
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(yes_button, no_button)
-        processor = EventProcessor()
         print("Initial message text :", message.text)
         summary, timestamp = processor.process_message(message.text)
         bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
