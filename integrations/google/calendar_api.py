@@ -5,24 +5,18 @@ from googleapiclient import discovery
 
 import integrations.google.dao as dao
 import utils
-from mesproc import EventProcessor
-from model.EventContent import EventResponse
+from model.EventContent import EventContent
 from variables.constants import CALENDAR_SERVICE, CALENDAR_API_VERSION
 
 
-def add_event(user_id, message, timest):
-    print("in add_event")
+def add_event(user_id, message, event_time):
     try:
         credentials = utils.get_google_credentials(user_id)
         creds = Credentials(**credentials)
         calendar = discovery.build(CALENDAR_SERVICE, CALENDAR_API_VERSION, credentials=creds)
-        print("Before mje")
-        event = make_json_event(message, timest)
+        event = make_json_event(message, event_time)
         calendar.events().insert(calendarId='primary', body=event).execute()
-    except Exception as exp:
-        print('-' * 100)
-        print("Exception add_event", exp)
-        print('-' * 100)
+    except:
         dao.delete_user(user_id)
         return -1
 
@@ -40,7 +34,7 @@ def get_events(user_id):
             start_time = event['start']['dateTime']
             end_time = event['end']['dateTime']
 
-            current_event = EventResponse("", start_time, end_time)
+            current_event = EventContent("", start_time, end_time)
             if event.get('summary'):
                 current_event.summary = event['summary']
             result.append(current_event)
@@ -49,15 +43,9 @@ def get_events(user_id):
     return result
 
 
-def make_json_event(summary, timest):
-    try:
-        print("Message from mje: ", summary)
-    except Exception as exp:
-        print('-' * 100)
-        print("Exception mje", exp)
-        print('-' * 100)
-    timestamp = datetime.strptime(timest, "%Y-%m-%d %H:%M:%S")
-    print("Making json event: ", datetime.isoformat(timestamp))
+def make_json_event(summary, event_time):
+    timestamp = datetime.strptime(event_time, "%Y-%m-%d %H:%M:%S")
+
     return {
         "summary": f"{summary}",
         'start': {

@@ -87,17 +87,14 @@ def callback(call):
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
         remove_keyboard(message)
-        try:
-            txt = message.text
-            timest = txt[41:txt.find(' and')]
-            print("Timest: ", timest)
-            response = add_event(message.chat.id, txt[txt.find('|') + 1:], timest)
-            if response == -1:
-                bot.reply_to(message, error_message)
-            else:
-                bot.reply_to(message, "Successfully added")
-        except Exception as exp:
-            print("-"*20, exp, "-"*20, sep='\n')
+
+        event_text = message.text
+        event_time = event_text[41:event_text.find(' and')]
+        response = add_event(message.chat.id, event_text[event_text.find('|') + 1:], event_time)
+        if response == -1:
+            bot.reply_to(message, error_message)
+        else:
+            bot.reply_to(message, "Successfully added")
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)
         bot.reply_to(message, "Adding canceled")
@@ -114,7 +111,6 @@ def process_text_messages(message):
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(yes_button, no_button)
-        print("Initial message text :", message.text)
         summary, timestamp = processor.process_message(message.text)
         bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
                      reply_markup=markup)
