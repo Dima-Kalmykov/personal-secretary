@@ -39,6 +39,7 @@ def get_events(user_id):
                 current_event.summary = event['summary']
             result.append(current_event)
     except:
+        dao.delete_user(user_id)
         return -1
     return result
 
