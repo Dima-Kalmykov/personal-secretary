@@ -17,17 +17,13 @@ processor = EventProcessor()
 def revoke(message):
     user_id = message.chat.id
     credentials = Credentials(**utils.get_google_credentials(user_id))
-    response = requests.post(
+    requests.post(
         'https://oauth2.googleapis.com/revoke',
         params={'token': credentials.token},
         headers={'content-type': 'application/x-www-form-urlencoded'}
     )
 
-    status_code = response.status_code
-    response_message = error_message
-
-    if status_code == 200:
-        response_message = "Access is successfully revoked!"
+    response_message = "Access is successfully revoked!"
 
     dao.delete_user(user_id)
     bot.send_message(message.chat.id, response_message)
