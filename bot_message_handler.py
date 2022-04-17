@@ -58,7 +58,7 @@ def process_start(message):
 
 
 @bot.message_handler(commands=[HELP_COMMAND])
-def process_start(message):
+def process_help(message):
     bot.send_message(message.chat.id,
                      "Google calendar access control is configured using the command /settings.\n\nBoth direct and forwarded messages are supported\n\nIf the time of the event cannot be determined, then 9 am will be used (today or tomorrow, depending on the current time)")
 

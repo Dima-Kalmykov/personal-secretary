@@ -25,22 +25,25 @@ def provide_access():
 
 @google_server.route(f'/{GOOGLE_AUTHORIZE_METHOD}')
 def authorize():
-    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES)
+    try:
+        flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES)
 
-    flow.redirect_uri = flask.url_for(
-        f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
-        _external=True,
-        _scheme=HTTPS
-    )
+        flow.redirect_uri = flask.url_for(
+            f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
+            _external=True,
+            _scheme=HTTPS
+        )
 
-    authorization_url, state = flow.authorization_url(
-        access_type='offline',
-        include_granted_scopes='true'
-    )
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true'
+        )
 
-    flask.session[STATE] = state
+        flask.session[STATE] = state
 
-    return flask.redirect(authorization_url)
+        return flask.redirect(authorization_url)
+    except:
+        return "You should provide access to your google calendar"
 
 
 @google_server.route(f'/{GOOGLE_CALLBACK_METHOD}')
