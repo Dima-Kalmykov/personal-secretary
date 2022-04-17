@@ -48,30 +48,33 @@ def authorize():
 
 @google_server.route(f'/{GOOGLE_CALLBACK_METHOD}')
 def oauth2callback():
-    state = flask.session[STATE]
+    try:
+        state = flask.session[STATE]
 
-    flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES, state=state)
+        flow = Flow.from_client_config(CLIENT_CONFIG, scopes=SCOPES, state=state)
 
-    flow.redirect_uri = flask.url_for(
-        f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
-        _external=True,
-        _scheme=HTTPS
-    )
+        flow.redirect_uri = flask.url_for(
+            f'{GOOGLE_AUTHORIZATION_STR}.{GOOGLE_CALLBACK_METHOD}',
+            _external=True,
+            _scheme=HTTPS
+        )
 
-    authorization_response = flask.request.url
-    flow.fetch_token(authorization_response=authorization_response)
+        authorization_response = flask.request.url
+        flow.fetch_token(authorization_response=authorization_response)
 
-    credentials = flow.credentials
-    user_id = flask.session[USER_ID]
+        credentials = flow.credentials
+        user_id = flask.session[USER_ID]
 
-    if not dao.get_user_by_id(user_id):
-        new_user = User(user_id, credentials.token, credentials.refresh_token, None)
-        dao.add_user(new_user)
+        if not dao.get_user_by_id(user_id):
+            new_user = User(user_id, credentials.token, credentials.refresh_token, None)
+            dao.add_user(new_user)
 
-    user_email = get_email(user_id, credentials)
-    dao.update_user(user_id, credentials.token, credentials.refresh_token, user_email)
+        user_email = get_email(user_id, credentials)
+        dao.update_user(user_id, credentials.token, credentials.refresh_token, user_email)
 
-    return 'Successfully! You can close the page'
+        return 'Successfully! You can close the page'
+    except:
+        return "You should provide access to your google calendar"
 
 
 def get_email(user_id, credentials):
