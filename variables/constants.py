@@ -36,6 +36,8 @@ GOOGLE_AUTHORIZE_METHOD = 'authorize'
 HTTPS = 'https'
 SETTINGS_COMMAND = 'settings'
 EVENTS_COMMAND = 'events'
+HELP_COMMAND = 'help'
+START_COMMAND = 'start'
 REVOKE_ACCESS_COMMAND = 'revoke'
 PROVIDE_ACCESS_COMMAND = 'provide'
 CONFIRM_ADDING_EVENT_COMMAND = 'confirm'
@@ -68,11 +70,11 @@ COMMANDS = [
         description="Get upcoming events"
     ),
     BotCommand(
-        command='help',
-        description="help"
+        command=HELP_COMMAND,
+        description="Basic info about the bot"
     ),
     BotCommand(
-        command='start',
-        description="some start info"
+        command=START_COMMAND,
+        description="Welcome message"
     )
 ]

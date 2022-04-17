@@ -51,14 +51,16 @@ def process_settings(message):
     bot.send_message(message.chat.id, settings_message, reply_markup=markup)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=[START_COMMAND])
 def process_start(message):
-    bot.send_message(message.chat.id, "Hello!")
+    bot.send_message(message.chat.id,
+                     "Hey!\n\nThis bot allows you to add events to the Google calendar, as well as view them. 4 commands are supported, information about which you can find out by clicking on the corresponding button in the dialog, next to the input field")
 
 
-@bot.message_handler(commands=['help'])
+@bot.message_handler(commands=[HELP_COMMAND])
 def process_start(message):
-    bot.send_message(message.chat.id, "Hello!")
+    bot.send_message(message.chat.id,
+                     "Google calendar access control is configured using the command /settings.\n\nBoth direct and forwarded messages are supported\n\nIf the time of the event cannot be determined, then 9 am will be used (today or tomorrow, depending on the current time)")
 
 
 @bot.message_handler(commands=[EVENTS_COMMAND])
