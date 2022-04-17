@@ -51,6 +51,16 @@ def process_settings(message):
     bot.send_message(message.chat.id, settings_message, reply_markup=markup)
 
 
+@bot.message_handler(commands=['start'])
+def process_start(message):
+    bot.send_message(message.chat.id, "Hello!")
+
+
+@bot.message_handler(commands=['help'])
+def process_start(message):
+    bot.send_message(message.chat.id, "Hello!")
+
+
 @bot.message_handler(commands=[EVENTS_COMMAND])
 def process_events(message):
     user_id = message.from_user.id

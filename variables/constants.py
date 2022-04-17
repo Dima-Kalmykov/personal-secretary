@@ -66,5 +66,13 @@ COMMANDS = [
     BotCommand(
         command=EVENTS_COMMAND,
         description="Get upcoming events"
+    ),
+    BotCommand(
+        command='help',
+        description="help"
+    ),
+    BotCommand(
+        command='start',
+        description="some start info"
     )
 ]
