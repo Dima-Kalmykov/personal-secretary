@@ -10,7 +10,7 @@ from variables.constants import *
 from variables.env_variables import BOT_TOKEN
 
 bot = TeleBot(BOT_TOKEN)
-error_message = "Something went wrong. Please, provide access to Google account once more."
+error_message = "Something went wrong. Please, provide access to Google account once more via /settings command."
 processor = EventProcessor()
 
 
@@ -83,7 +83,7 @@ def process_events(message):
                 result_message = "Event list is empty"
             bot.send_message(message.chat.id, result_message)
     else:
-        bot.send_message(message.chat.id, f"Please, provide access to your google account")
+        bot.send_message(message.chat.id, f"Please, provide access to your google account via /settings command")
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -123,7 +123,8 @@ def process_text_messages(message):
         bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
                      reply_markup=markup)
     else:
-        bot.reply_to(message, f"Can't add this event. Please, provide access to your google account")
+        bot.reply_to(message,
+                     f"Can't add this event. Please, provide access to your google account via /settings command")
 
 
 def remove_keyboard(message):
