@@ -55,13 +55,18 @@ def process_settings(message):
 @bot.message_handler(commands=[START_COMMAND])
 def process_start(message):
     bot.send_message(message.chat.id,
-                     "Hey!\n\nThis bot allows you to add events to the Google calendar, as well as view them. 4 commands are supported, information about which you can find out by clicking on the corresponding button in the dialog, next to the input field")
+                     "Hey!\n\nThis bot allows you to add events to the Google calendar, as well as view them."
+                     " 4 commands are supported, information about which you can find out by clicking "
+                     "on the corresponding button in the dialog, next to the input field")
 
 
 @bot.message_handler(commands=[HELP_COMMAND])
 def process_help(message):
     bot.send_message(message.chat.id,
-                     "Google calendar access control is configured using the command /settings.\n\nBoth direct and forwarded messages are supported\n\nIf the time of the event cannot be determined, then 9 am will be used (today or tomorrow, depending on the current time)")
+                     "Google calendar access control is configured using the command "
+                     "/settings.\n\nBoth direct and forwarded messages are supported\n\n"
+                     "If the time of the event cannot be determined, then 9 am will be "
+                     "used (today or tomorrow, depending on the current time)")
 
 
 @bot.message_handler(commands=[EVENTS_COMMAND])
@@ -95,22 +100,38 @@ def callback(call):
     if command == REVOKE_ACCESS_COMMAND:
         revoke(message)
     if command == CONFIRM_ADDING_EVENT_COMMAND:
-        remove_keyboard(message)
+        if dao.get_user_by_id(message.chat.id):
+            remove_keyboard(message)
 
-        event_text = message.text
-        event_time = event_text[41:event_text.find(' and')]
-        response = add_event(message.chat.id, event_text[event_text.find('|') + 1:], event_time)
-        if response == -1:
-            bot.reply_to(message, error_message)
+            event_text = message.text
+            event_time = event_text[41:event_text.find(' and')]
+            response = add_event(message.chat.id, event_text[event_text.find('|') + 1:], event_time)
+            if response == -1:
+                bot.reply_to(message, error_message)
+            else:
+                bot.reply_to(message, "Successfully added")
         else:
-            bot.reply_to(message, "Successfully added")
+            bot.reply_to(message,
+                         f"Can't add this event. Please, provide access to your google account via /settings command")
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)
         bot.reply_to(message, "Adding canceled")
     if command == EDIT_EVENT_COMMAND:
-        remove_keyboard(message)
-        dao.set_user_state(message.chat.id, WAITING_TIME_AND_CONTENT_STATE)
-        bot.reply_to(message, "Input what you want")
+        user = dao.get_user_by_id(message.chat.id)
+        if user:
+            if user.state == WAITING_TIME_AND_CONTENT_STATE:
+                bot.reply_to(message, "You can't edit this message as you are editing another one")
+                return
+
+            remove_keyboard(message)
+            dao.set_user_state(message.chat.id, WAITING_TIME_AND_CONTENT_STATE)
+            bot.reply_to(message,
+                         "Input time and content in format %H:%M %d.%m.%Y content "
+                         "(like 14:20 24.02.2022 Hello, world!)\n\n"
+                         "If you want to stop editing and cancel adding - type 'CANCEL' without quotes")
+        else:
+            bot.reply_to(message,
+                         f"Can't edit this event. Please, provide access to your google account via /settings command")
 
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
@@ -122,6 +143,10 @@ def process_text_messages(message):
         if user.state == WAITING_TIME_AND_CONTENT_STATE:
             try:
                 text = message.text
+                if text == 'CANCEL':
+                    dao.set_user_state(user_id, DEFAULT_STATE)
+                    return
+
                 second_space_index = text.find(' ', text.find(' ') + 1)
                 time = extract_time(text[:second_space_index])
                 content = text[second_space_index + 1:]
@@ -134,7 +159,10 @@ def process_text_messages(message):
                 else:
                     bot.reply_to(message, "Successfully added")
             except:
-                bot.send_message(message.chat.id, f'Invalid format of message. Please, try again')
+                bot.send_message(message.chat.id,
+                                 f'Invalid format of message. Please, try again.'
+                                 f" Correct format = %H:%M %d.%m.%Y content "
+                                 f"(or 'CANCEL' without quotes to stop editing and adding)")
         else:
             yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
             no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
