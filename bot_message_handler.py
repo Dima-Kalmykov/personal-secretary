@@ -128,6 +128,11 @@ def process_text_messages(message):
                 bot.edit_message_text(f'Do you want to add event with start time {time} and given content|\n{content}',
                                       message.chat.id, message.message_id)
                 dao.set_user_state(user_id, DEFAULT_STATE)
+                response = add_event(message.chat.id, content, time)
+                if response == -1:
+                    bot.reply_to(message, error_message)
+                else:
+                    bot.reply_to(message, "Successfully added")
             except:
                 bot.send_message(message.chat.id, f'Invalid format of message. Please, try again')
         else:
@@ -146,7 +151,7 @@ def process_text_messages(message):
 
 
 def extract_time(text):
-    return datetime.strptime(text, "%H:%M %d.%m.%Y")
+    return str(datetime.strptime(text, "%H:%M %d.%m.%Y"))
 
 
 def remove_keyboard(message):
