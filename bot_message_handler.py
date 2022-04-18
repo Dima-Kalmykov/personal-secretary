@@ -8,6 +8,7 @@ from integrations.google.calendar_api import get_events, add_event
 from mesproc import EventProcessor
 from variables.constants import *
 from variables.env_variables import BOT_TOKEN
+from datetime import datetime
 
 bot = TeleBot(BOT_TOKEN)
 error_message = "Something went wrong. Please, provide access to Google account once more via /settings command."
@@ -106,6 +107,10 @@ def callback(call):
     if command == CANCEL_EVENT_ADDING_COMMAND:
         remove_keyboard(message)
         bot.reply_to(message, "Adding canceled")
+    if command == EDIT_EVENT_COMMAND:
+        remove_keyboard(message)
+        dao.set_user_state(message.chat.id, WAITING_TIME_AND_CONTENT_STATE)
+        bot.reply_to(message, "Input what you want")
 
 
 @bot.message_handler(func=lambda x: True, content_types=['text'])
@@ -114,17 +119,34 @@ def process_text_messages(message):
     user = dao.get_user_by_id(user_id)
 
     if user:
-        yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
-        no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
+        if user.state == WAITING_TIME_AND_CONTENT_STATE:
+            try:
+                text = message.text
+                second_space_index = text.find(' ', text.find(' ') + 1)
+                time = extract_time(text[:second_space_index])
+                content = text[second_space_index + 1:]
+                bot.edit_message_text(f'Do you want to add event with start time {time} and given content|\n{content}',
+                                      message.chat.id, message.message_id)
+                dao.set_user_state(user_id, DEFAULT_STATE)
+            except:
+                bot.send_message(message.chat.id, f'Invalid format of message. Please, try again')
+        else:
+            yes_button = types.InlineKeyboardButton("Yes", callback_data=CONFIRM_ADDING_EVENT_COMMAND)
+            no_button = types.InlineKeyboardButton("No", callback_data=CANCEL_EVENT_ADDING_COMMAND)
+            edit_button = types.InlineKeyboardButton("Edit", callback_data=EDIT_EVENT_COMMAND)
 
-        markup = types.InlineKeyboardMarkup(row_width=2)
-        markup.add(yes_button, no_button)
-        summary, timestamp = processor.process_message(message.text)
-        bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
-                     reply_markup=markup)
+            markup = types.InlineKeyboardMarkup(row_width=3)
+            markup.add(yes_button, no_button, edit_button)
+            summary, timestamp = processor.process_message(message.text)
+            bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
+                         reply_markup=markup)
     else:
         bot.reply_to(message,
                      f"Can't add this event. Please, provide access to your google account via /settings command")
+
+
+def extract_time(text):
+    return datetime.strptime(text, "%H:%M %d.%m.%Y")
 
 
 def remove_keyboard(message):

@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from variables.constants import DEFAULT_STATE
 from variables.env_variables import DATABASE_URL
 
 db_engine = create_engine(DATABASE_URL)
@@ -22,16 +23,24 @@ class User(base):
     google_token = Column(String)
     google_refresh_token = Column(String)
     email = Column(String)
+    state = Column(String)
 
     def __init__(self, user_id, token, refresh_token, email):
         self.id = user_id
         self.google_token = token
         self.google_refresh_token = refresh_token
         self.email = email
+        self.state = DEFAULT_STATE
 
 
 def get_user_by_id(user_id):
     return session.query(User).get(user_id)
+
+
+def set_user_state(user_id, state):
+    user = get_user_by_id(user_id)
+    user.state = state
+    session.commit()
 
 
 def add_user(user):
