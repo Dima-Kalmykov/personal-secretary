@@ -13,7 +13,7 @@ from datetime import datetime
 bot = TeleBot(BOT_TOKEN)
 error_message = "Something went wrong. Please, provide access to Google account once more via /settings command."
 processor = EventProcessor()
-
+some_name = dict()
 
 def revoke(message):
     user_id = message.chat.id
@@ -32,16 +32,20 @@ def revoke(message):
 
 @bot.message_handler(commands=[SETTINGS_COMMAND])
 def process_settings(message):
+    print("pros_set")
     markup = types.InlineKeyboardMarkup(row_width=1)
     settings_message = "Google account is not linked"
 
     user_id = message.from_user.id
+    print(user_id)
     user = dao.get_user_by_id(user_id)
-
+    print("user got")
     if user:
+        print("if user")
         access_button = types.InlineKeyboardButton('Revoke access', callback_data=REVOKE_ACCESS_COMMAND)
         settings_message = f"All events will be saved to the calendar of user with email {user.email}"
     else:
+        print("else user")
         encoded_id = utils.encode_string(str(user_id))
         access_button = types.InlineKeyboardButton(
             'Provide access',
@@ -122,7 +126,7 @@ def callback(call):
             if user.state == WAITING_TIME_AND_CONTENT_STATE:
                 bot.reply_to(message, "You can't edit this message as you are editing another one")
                 return
-
+            some_name[message.chat.id] = message.message_id
             remove_keyboard(message)
             dao.set_user_state(message.chat.id, WAITING_TIME_AND_CONTENT_STATE)
             bot.reply_to(message,
@@ -148,17 +152,20 @@ def process_text_messages(message):
                     return
 
                 second_space_index = text.find(' ', text.find(' ') + 1)
+                print('ssi:', second_space_index)
                 time = extract_time(text[:second_space_index])
+                print('time:', time)
                 content = text[second_space_index + 1:]
                 bot.edit_message_text(f'Do you want to add event with start time {time} and given content|\n{content}',
-                                      message.chat.id, message.message_id)
+                                      message.chat.id, some_name[message.chat.id])
                 dao.set_user_state(user_id, DEFAULT_STATE)
                 response = add_event(message.chat.id, content, time)
                 if response == -1:
                     bot.reply_to(message, error_message)
                 else:
                     bot.reply_to(message, "Successfully added")
-            except:
+            except Exception as exp:
+                print("-"*50, exp, "-"*50, sep='\n')
                 bot.send_message(message.chat.id,
                                  f'Invalid format of message. Please, try again.'
                                  f" Correct format = %H:%M %d.%m.%Y content "

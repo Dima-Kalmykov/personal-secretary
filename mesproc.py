@@ -44,9 +44,9 @@ class EventProcessor:
         return dt.combine(daystamp, timestamp)
 
     def extract_summary(self, msg=""):
-        preps = [' at ', ' with ', ' on ', ' in ']
+        preps = [' at ', ' with ', ' on ', ' in ', ' to ']
         for prep in preps:
-            msg = msg.replace(prep, '')
+            msg = msg.replace(prep, ' ')
         msg = self.t(msg, to_language='ru')
         return msg.lower()
 
