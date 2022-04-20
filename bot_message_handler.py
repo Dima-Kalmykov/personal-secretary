@@ -145,6 +145,7 @@ def process_text_messages(message):
                 text = message.text
                 if text == 'CANCEL':
                     dao.set_user_state(user_id, DEFAULT_STATE)
+                    bot.send_message(message.chat.id, "Editing and adding stopped")
                     return
 
                 second_space_index = text.find(' ', text.find(' ') + 1)
