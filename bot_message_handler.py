@@ -81,9 +81,8 @@ def process_events(message):
         else:
             result_message = "List of your events:\n"
             for event in events:
-                result_message += f"summary = {event.summary}\n" \
-                                  f"start_time = {event.start_time}\n" \
-                                  f"end_time = {event.end_time}\n" \
+                result_message += f"{event.summary}\n" \
+                                  f"Starts at {event.start_time}\n" \
                                   f"-------------------------------------\n"
             if not events:
                 result_message = "Event list is empty"
@@ -105,7 +104,7 @@ def callback(call):
 
             event_text = message.text
             event_time = event_text[41:event_text.find(' and')]
-            response = add_event(message.chat.id, event_text[event_text.find('|') + 1:], event_time)
+            response = add_event(message.chat.id, event_text[event_text.find('?') + 2:], event_time)
             if response == -1:
                 bot.reply_to(message, error_message)
             else:
@@ -147,11 +146,10 @@ def process_text_messages(message):
                     dao.set_user_state(user_id, DEFAULT_STATE)
                     bot.send_message(message.chat.id, "Editing and adding stopped")
                     return
-
                 second_space_index = text.find(' ', text.find(' ') + 1)
                 time = extract_time(text[:second_space_index])
                 content = text[second_space_index + 1:]
-                bot.edit_message_text(f'Do you want to add event with start time {time} and given content|\n{content}',
+                bot.edit_message_text(f'Do you want to add event with start time {time} and the following content? \n\n{content}',
                                       message.chat.id, last_edited_message_by_chat[message.chat.id])
                 dao.set_user_state(user_id, DEFAULT_STATE)
                 response = add_event(message.chat.id, content, time)
@@ -172,7 +170,7 @@ def process_text_messages(message):
             markup = types.InlineKeyboardMarkup(row_width=3)
             markup.add(yes_button, edit_button, no_button)
             summary, timestamp = processor.process_message(message.text)
-            bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content|\n{summary}',
+            bot.reply_to(message, f'Do you want to add event with start time {timestamp} and given content?\n\n{summary}',
                          reply_markup=markup)
     else:
         bot.reply_to(message,

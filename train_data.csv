@@ -1,0 +1,72 @@
+хотеть поехать в казань на следующий выходной,O O O U-LOC O O O
+заехать к сестра сегодня в 7,O O U-PER U-DATE B-TIME I-TIME
+пара в 12 30,O O B-TIME L-TIME
+спортзал в 18,O O O
+поставить созвон с команда на 17,O O O O O U-TIME
+надо поздравить бабушка завтра,O O U-PER U-DATE
+дедлайн по эконометрика в воскресение полночь,O O O O U-DATE U-TIME
+напоминание на воскресение 18:00 начать делать дз,O O U-DATE U-TIME O O O
+перенос дедлайн по эконометрика на вторник,O O O O O U-DATE
+напомнить в вторник 23:30 начать делать эконометрика,O O U-DATE U-TIME O O O
+19 август в казахстан,B-DATE L-DATE O U-LOC
+увидеть сестра,O U-PER
+пара завтра в 10:00,O U-DATE O U-TIME
+треня после обед,O O O
+совещание в 18:00,O O U-TIME
+поговорить с ксюша,O O U-PER
+накормить кот,O O
+не забыть поздравить тётя,O O O U-PER
+посмотреть прогноз погода,O O O
+связаться с визажист,O O O
+лететь в питер в конец июнь,O O U-LOC O O U-DATE
+вечером идти катать шар с пацан,U-TIME O O O O O
+27 март первый с боря,B-DATE L-DATE O O O
+понедельник 1230 в зал,U-DATE U-TIME O O
+переговоры послезавтра с озон,O U-TIME O O
+болтать в дискорд вечером,O O O U-TIME
+поездка в питер на близкий выходной,O O U-LOC O O O
+собираться у вход в клуб с арт в 23:00,O O O O O O O O U-TIME
+выучить диалог и приготовить чтение к понедельник,O O O O O O U-DATE
+в среда в 16:00 начать день нога,O U-DATE O U-TIME O O O
+встречаться с никита в 22:00 в воскресение,O O U-PER O U-TIME O U-DATE
+собираться в дискорд с полина в 20:00 сегодня,O O O U-PER U-PER O U-TIME U-DATE
+15 июль поездка в питер,B-DATE L-DATE O O U-LOC
+в пятница встреча с папа в 18 00,O U-DATE O O U-PER B-TIME I-TIME I-TIME
+завтра в 9 30 пара по сеть,U-DATE B-TIME I-TIME I-TIME O O O
+сегодня в 17 15 идти в зал,U-DATE B-TIME I-TIME I-TIME O O O
+сегодня в 15 00 созвон по работа,U-DATE B-TIME I-TIME I-TIME O O O
+созвониться с бабушка в вторник в 14 30,O O U-PER O U-DATE B-TIME I-TIME I-TIME
+сегодня в 18 00 в кино,U-DATE B-TIME I-TIME I-TIME O O
+15 число еда обратно в общага,B-DATE L-DATE O O O O
+завтра в 7 приём у врач,U-DATE B-TIME I-TIME O O O
+16 число поход в театр,B-DATE L-DATE O O O
+второй половина мая абхазия,O O O O
+кино с вика и настя через два день,O O U-PER O U-PER B-DATE I-DATE L-DATE
+кр по матана в чт,O O O O U-DATE
+с понедельник начать,O U-DATE O
+9:00 сб 5 этаж офис деовой стиль,U-TIME U-DATE O O O O O
+каждый чётный день неделя в 19:15,O O O O O U-TIME
+охота на фазан 18 август,O O O B-DATE L-DATE
+отремонтировать старый моторный лодка в следующий месяц 18го число,O O O O O O O O O
+поставить всё точка над "i" в весь название "ikea" сегодня в 13:56,O O O O O O O O O U-DATE O U-TIME
+внеплановый вызвать дождь через два день,O O O B-DATE I-DATE L-DATE
+24 май планировать слетать в тель-авив к родный,B-DATE L-DATE O O O O O O
+не забыть о встреча завтра в десять в ресторан "турандот" по случай юбилей тётя,O O O O U-DATE B-TIME I-TIME O O O O O O O
+в четверг в 11 час юол проснуться в 7,O U-DATE B-TIME I-TIME I-TIME O O B-TIME I-TIME
+занятие с папа в этот среда в 6 вечера,O O U-PER O O U-DATE B-TIME I-TIME I-TIME
+в пятница в 16 час финальный митинг по проекту за 6 час дописать отчёт,O U-DATE B-TIME I-TIME I-TIME O O O O O B-TIME I-TIME O O
+позвонить бн сегодня после занятие,O O U-DATE O O
+выделить вечером два час на проверка дзшка у второкурсник,O U-TIME B-TIME I-TIME O O O O O
+через два неделя отвезти ярик на приём к ветеринару проверка слух у владимир семёнович,B-TIME I-TIME I-TIME O O O O O O O O O O O
+завтра в 12 день пара по мл не забыть спросить про накоп,U-DATE B-TIME I-TIME I-TIME O O O O O O O O
+не забыть 8 число (иметься в вид следующий месяц если дата "8" уже пройти в текущем) заканчиваться лондонский сессия,O O O O O O O O O O O O O O O O O O O
+поезд в нижний новгород через 3 день в 13.00 от ленинградский,O O B-LOC L-LOC B-DATE I-DATE I-DATE O U-TIME O O
+в сб на патрик с одногруп после 3 пара,O U-DATE O O O O O O O
+в пн 1ой пара не будет второй с 11.00,O U-DATE O O O O O O U-TIME
+качалка в сравнить в 9,O O O B-TIME I-TIME
+совещание в зум в 13 по мск(!!),O O O B-TIME I-TIME O O
+созвон с родня в пт в 18,O O O O U-DATE B-TIME I-TIME
+завтра купить в магазин молоко яйцо и сметана,U-DATE O O O O O O O
+ты сегодня в 18 звонить бабушке,O U-DATE B-TIME I-TIME O U-PER
+большой в сравнить в 19.45 с сестра,O O O O U-TIME O U-PER
+съездить в мфц за паспорт после 16,O O O O O B-TIME I-TIME
